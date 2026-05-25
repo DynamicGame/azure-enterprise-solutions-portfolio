@@ -27,7 +27,7 @@ This portfolio reflects my capabilities as a **Modern Workplace Engineer & Azure
 **High Availability Web Server Using Azure VMs + Availability Set**  
 - Solves: On‑prem single‑point‑of‑failure  
 - Skills: VM deployment, availability sets, NSGs, disk encryption  
-- Status: In progress  
+- Status: Completed  
 - Folder: `/01-compute-vm-solutions/high-availability-webserver`
 
 ---
@@ -36,6 +36,7 @@ This portfolio reflects my capabilities as a **Modern Workplace Engineer & Azure
 **Three‑Tier Secure Network Architecture (Web → App → DB)**  
 - Solves: Network segmentation, least privilege, secure workloads  
 - Skills: VNets, subnets, NSGs, ASGs, peering, Bastion  
+- Status: Completed
 - Folder: `/02-networking-solutions/three-tier-architecture`
 
 ---
@@ -43,7 +44,8 @@ This portfolio reflects my capabilities as a **Modern Workplace Engineer & Azure
 ### **3. Storage Solutions**
 **Secure Storage Account with SAS, RBAC, and Lifecycle Policies**  
 - Solves: Controlled access to company data  
-- Skills: Blob/File storage, SAS, RBAC, immutability, lifecycle rules  
+- Skills: Blob/File storage, SAS, RBAC, immutability, lifecycle rules 
+- Status: inprogress 
 - Folder: `/03-storage-solutions/secure-storage`
 
 ---
@@ -52,6 +54,7 @@ This portfolio reflects my capabilities as a **Modern Workplace Engineer & Azure
 **Role‑Based Access Model for Dev/Test/Prod Environments**  
 - Solves: Access separation and governance  
 - Skills: RBAC, custom roles, Entra ID groups, subscription access  
+- Status: inprogress 
 - Folder: `/04-identity-access-solutions/rbac-environment-model`
 
 ---
@@ -60,6 +63,7 @@ This portfolio reflects my capabilities as a **Modern Workplace Engineer & Azure
 **Azure Monitor + Alerts for Compute and Storage**  
 - Solves: Proactive detection of performance issues  
 - Skills: Log Analytics, metrics, alerts, dashboards  
+- Status: inprogress 
 - Folder: `/05-monitoring-solutions/monitoring-alerts`
 
 ---
@@ -68,6 +72,7 @@ This portfolio reflects my capabilities as a **Modern Workplace Engineer & Azure
 **Tag Enforcement + Resource Locks + Azure Policy**  
 - Solves: Cost governance and accidental deletion  
 - Skills: Azure Policy, locks, tagging strategy, management groups  
+- Status: inprogress 
 - Folder: `/06-governance-security-solutions/policy-governance`
 
 ---
@@ -76,6 +81,7 @@ This portfolio reflects my capabilities as a **Modern Workplace Engineer & Azure
 **PowerShell Automated VM Deployment**  
 - Solves: Consistent, repeatable infrastructure deployment  
 - Skills: PowerShell, CLI, ARM/Bicep fundamentals  
+- Status: inprogress 
 - Folder: `/07-automation-powershell/vm-deployment`
 
 ---

@@ -115,14 +115,4 @@ Understand fault domains and update domains
 
 Build resilient, production‑ready infrastructure
 
-📌 Future Enhancements
 
-Add Azure Load Balancer for traffic distribution
-
-Add Azure Bastion for secure remote access
-
-Add VM Scale Set version of this project
-
-Add monitoring + alerts (CPU, disk, availability)
-
-Add Azure Backup & Recovery Vault

@@ -96,6 +96,7 @@ az vm create `
     --name $vm1Name `
     --availability-set $avSetName `
     --image Win2022Datacenter `
+    --size Standard_B2s `
     --vnet-name $vnetName `
     --subnet $subnetName `
     --nsg $nsgName `
@@ -112,6 +113,7 @@ az vm create `
     --name $vm2Name `
     --availability-set $avSetName `
     --image Win2022Datacenter `
+    --size Standard_B2s `
     --vnet-name $vnetName `
     --subnet $subnetName `
     --nsg $nsgName `

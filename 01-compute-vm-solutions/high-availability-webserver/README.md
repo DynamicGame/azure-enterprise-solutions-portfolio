@@ -49,7 +49,10 @@ Allow HTTPS (443)
 Restrict RDP/SSH to admin IP
 Optional deny‑all fallback
 
-3. cleanup.ps1
+3. install-iis.ps1 
+After deploying the infrastructure, install IIS using Azure VM Extensions
+
+4. cleanup.ps1
 Safely deletes the entire environment with a confirmation prompt.
 
 🔐 Security Considerations

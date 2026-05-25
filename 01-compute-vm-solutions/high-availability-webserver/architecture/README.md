@@ -1,4 +1,4 @@
-flowchart TD
+
 
     Internet([Public Internet])
     PublicIP[Public IP Address]

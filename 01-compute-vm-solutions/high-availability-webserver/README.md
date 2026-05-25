@@ -31,59 +31,98 @@ Azure Availability Sets solve this by distributing VMs across fault domains and 
 | **Tags** | Cost & ownership governance |
 
 🚀 Deployment Scripts
+
 This project includes three automation scripts located in /scripts.
 
 1. deploy.ps1
+   
 Deploys the full environment:
+
 Resource Group
+
 VNet + Subnet
+
 NSG
+
 Availability Set
+
 Two VMs
+
 Tags
 
 2. nsg-rules.ps1
 Applies secure NSG rules:
+
 Allow HTTP (80)
+
 Allow HTTPS (443)
+
 Restrict RDP/SSH to admin IP
+
 Optional deny‑all fallback
 
 3. install-iis.ps1 
+
 After deploying the infrastructure, install IIS using Azure VM Extensions
 
 4. cleanup.ps1
+
 Safely deletes the entire environment with a confirmation prompt.
 
 🔐 Security Considerations
+
 Restrict RDP/SSH to your IP only
+
 Use Azure Bastion for secure remote access
+
 Enable Azure Disk Encryption
+
 Apply NSGs at subnet level for layered security
+
 Use resource locks to prevent accidental deletion
+
 Apply tags for cost tracking and governance
 
 💰 Cost Optimisation
+
 Use B‑series VMs for dev/test
+
 Use D‑series for production workloads
+
 Enable auto‑shutdown for non‑production environments
+
 Use Standard HDD for OS disks unless performance is required
+
 Availability Sets have no cost — only VMs incur charges
 
 🧠 What This Demonstrates (AZ‑104 Skills)
+
 This project validates your ability to:
+
 Deploy and manage Azure Virtual Machines
+
 Design highly available compute solutions
+
 Configure VNets, subnets, NICs, and IP addressing
+
 Implement NSGs and network security
+
 Apply governance (tags, locks)
+
 Automate deployments with PowerShell & CLI
+
 Understand fault domains and update domains
+
 Build resilient, production‑ready infrastructure
 
 📌 Future Enhancements
+
 Add Azure Load Balancer for traffic distribution
+
 Add Azure Bastion for secure remote access
+
 Add VM Scale Set version of this project
+
 Add monitoring + alerts (CPU, disk, availability)
+
 Add Azure Backup & Recovery Vault

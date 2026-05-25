@@ -163,6 +163,41 @@ Legal hold
 
 WORM protection
 
+6. Cleanup Script
+A full cleanup script is included to safely remove all storage resources created in this project:
+
+Storage Account
+
+Containers
+
+Lifecycle management policies
+
+SAS policies
+
+Immutability policies (if unlocked)
+
+Resource group (optional)
+
+Cleanup Script
+cleanup-storage.ps1
+
+This script ensures no storage costs continue after the project and prevents leftover diagnostic or immutable configurations.
+
+🧽 Cleanup Workflow
+Remove lifecycle management rules
+
+Remove immutability policies (if allowed)
+
+Remove legal holds
+
+Delete containers
+
+Delete the storage account
+
+Optionally delete the resource group
+
+This mirrors real enterprise teardown procedures.
+
 🛡️ Security Considerations
 No public endpoints
 
@@ -225,6 +260,7 @@ PowerShell + CLI automation
         lifecycle-policy.json
         apply-lifecycle.ps1
         enable-immutability.ps1
+        cleanup-storage.ps1
         screenshots/
 ```
 🎯 What This Project Demonstrates

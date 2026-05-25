@@ -163,6 +163,31 @@ Over‑privileged roles
 
 Non‑compliant access
 
+5. Cleanup Script
+A cleanup script is included to safely remove all identity and RBAC resources created in this project:
+
+Entra ID groups
+
+RBAC assignments
+
+Placeholder resource groups (if used)
+
+Cleanup Script
+cleanup-identity.ps1
+
+This script ensures your tenant remains clean and prevents orphaned RBAC assignments or unused groups.
+
+🧽 Cleanup Workflow
+Remove RBAC assignments for all Dev/Test/Prod groups
+
+Delete Entra ID groups
+
+Remove placeholder resource groups (RG‑Dev, RG‑Test, RG‑Prod)
+
+Validate no direct user assignments remain
+
+This reflects real identity governance teardown procedures.
+
 🛡️ Security Considerations
 No direct user assignments
 
@@ -211,6 +236,7 @@ Identity architecture
         assign-rbac.ps1
         create-environment-structure.ps1
         audit-access.ps1
+        cleanup-identity.ps1
         screenshots/
 ```
 🎯 What This Project Demonstrates

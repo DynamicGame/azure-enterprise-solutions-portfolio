@@ -1,140 +1,56 @@
-# 🌐 Azure Enterprise Solutions Portfolio  
-### Real‑World Cloud Engineering Projects Aligned to AZ‑104
+# Azure Enterprise Solutions Portfolio
 
-This repository showcases a collection of **enterprise‑grade Azure solutions** designed to demonstrate practical cloud engineering skills across **compute, networking, storage, identity, governance, monitoring, and automation**.
+**Abdulbasit Soliu · Cloud infrastructure, identity and PowerShell automation**
 
-Each project is built around a **real business problem**, then solved using Azure services following best practices for security, availability, and cost optimisation.
+Practical Azure projects that connect an infrastructure problem to a documented design and supporting scripts. My focus is understanding how compute, networks, access control and operations fit together, then making that work easier to repeat.
 
-This portfolio reflects my capabilities as a **Modern Workplace Engineer & Azure Administrator**, combining hands‑on cloud deployment, automation, and architectural thinking.
+[LinkedIn](https://www.linkedin.com/in/abdulbasit-soliu-75901b250/) · [GitHub](https://github.com/DynamicGame)
 
----
+## Start here
 
-## 🧩 What This Portfolio Demonstrates
+- **[Compute: availability-set web servers](01-compute-vm-solutions/high-availability-webserver/)** — two Windows VMs, IIS, network rules and deployment screenshots.
+- **[Networking: three-tier architecture](02-networking-solutions/)** — segmented workloads, load balancers, private endpoints, DNS and management access.
+- **[Review notes](docs/REVIEW.md)** — implementation boundaries, corrections and the remaining validation work.
 
-✔️ Ability to design and deploy secure Azure infrastructure  
-✔️ Real‑world problem solving using cloud services  
-✔️ Strong understanding of AZ‑104 concepts  
-✔️ Documentation, architecture diagrams, and automation  
-✔️ Enterprise‑ready solutions (not student labs)  
-✔️ PowerShell, Azure CLI, ARM/Bicep fundamentals  
-✔️ Identity, governance, and compliance awareness  
+## Project map
 
----
+| Area | What the work covers | Current evidence / status |
+| --- | --- | --- |
+| [01 · Compute](01-compute-vm-solutions/high-availability-webserver/) | Windows VMs, availability sets, IIS, NSGs | Scripts, diagram and deployment screenshots; revised scripts need a fresh deployment check |
+| [02 · Networking](02-networking-solutions/) | Three-tier VNet, ASGs, load balancers, Firewall, Bastion, private DNS | Design and component scripts; integration validation outstanding |
+| [03 · Storage](03-storage-solutions/) | Blob/Files private endpoints, RBAC, lifecycle, SAS and retention | Implementation in progress |
+| [04 · Identity](04-identity-access-solutions/rbac-environment-model/) | Entra groups and Dev/Test/Prod access scopes | Implementation in progress |
+| [05 · Monitoring](05-monitoring-solutions/monitoring-alerts/) | Workspace, agent onboarding, alerts and operations views | Implementation in progress; see monitoring limitations |
+| [06 · Governance](06-governance-security-solutions/policy-governance/) | Management groups, policy definitions, assignments and locks | Implementation in progress |
+| [07 · Automation](07-automation-powershell/vm-deployment/) | Parameterised VM deployment and ARM/Bicep templates | Implementation in progress |
+| [08 · Modern workplace](08-modern-workplace-architecture/) | Intune, Autopilot and endpoint policy design | Design examples and Graph scripts; tenant validation outstanding |
 
-## 🗂️ Project Index
+Status describes repository evidence, not a production certification. These are portfolio environments; uptime, recovery and security outcomes require measured tests in an Azure subscription.
 
-### **1. Compute Solutions**
-**High Availability Web Server Using Azure VMs + Availability Set**  
-- Solves: On‑prem single‑point‑of‑failure  
-- Skills: VM deployment, availability sets, NSGs, disk encryption  
-- Status: Completed  
-- Folder: `/01-compute-vm-solutions/high-availability-webserver`
+## Skills demonstrated
 
----
+| Discipline | Examples in this repository |
+| --- | --- |
+| Azure administration | Resource groups, virtual machines, networks, storage and tagging |
+| Networking | Subnets, NSGs, ASGs, load-balancer probes, routes and private DNS |
+| Identity and workplace | Entra ID group access, Azure RBAC and Intune policy design |
+| Automation | PowerShell, Azure CLI and infrastructure templates |
+| Engineering practice | Architecture explanations, deployment order, validation plans and teardown notes |
 
-### **2. Networking Solutions**
-**Three‑Tier Secure Network Architecture (Web → App → DB)**  
-- Solves: Network segmentation, least privilege, secure workloads  
-- Skills: VNets, subnets, NSGs, ASGs, peering, Bastion  
-- Status: Completed
-- Folder: `/02-networking-solutions/three-tier-architecture`
+The cloud projects support my AZ-104 learning. Certification attainment is not claimed here.
 
----
+## Working with the projects
 
-### **3. Storage Solutions**
-**Secure Storage Account with SAS, RBAC, and Lifecycle Policies**  
-- Solves: Controlled access to company data  
-- Skills: Blob/File storage, SAS, RBAC, immutability, lifecycle rules 
-- Status: inprogress 
-- Folder: `/03-storage-solutions/secure-storage`
+1. Read the project README and [review notes](docs/REVIEW.md) before choosing a script.
+2. Use an isolated Azure subscription or dedicated lab scopes. Check the selected tenant and subscription with `az account show`.
+3. Install PowerShell 7.3 or later and Azure CLI; sign in using `az login`. Install only the CLI extensions or Graph modules required by the selected project.
+4. Supply your own resource names, scope IDs and credentials. Replace draft placeholders before execution. Never commit passwords, SAS tokens, exported tenant data or local parameter files.
+5. Follow the documented deployment order, capture checks and remove the lab resources when finished. Firewall, Bastion, VMs, SQL and log ingestion can continue to incur charges.
 
----
+No script was deployed to Azure as part of the November 2026 repository review. Local parsing and link checks do not establish deployment success.
 
-### **4. Identity & Access Solutions**
-**Role‑Based Access Model for Dev/Test/Prod Environments**  
-- Solves: Access separation and governance  
-- Skills: RBAC, custom roles, Entra ID groups, subscription access  
-- Status: inprogress 
-- Folder: `/04-identity-access-solutions/rbac-environment-model`
+## Repository guide
 
----
+Each project README explains the problem, implemented components, architecture, script order, validation and remaining work. Mermaid diagrams are editable documentation; the original PNG diagrams remain available as design history where their assumptions differ from the scripts.
 
-### **5. Monitoring & Alerting**
-**Azure Monitor + Alerts for Compute and Storage**  
-- Solves: Proactive detection of performance issues  
-- Skills: Log Analytics, metrics, alerts, dashboards  
-- Status: inprogress 
-- Folder: `/05-monitoring-solutions/monitoring-alerts`
-
----
-
-### **6. Governance & Compliance**
-**Tag Enforcement + Resource Locks + Azure Policy**  
-- Solves: Cost governance and accidental deletion  
-- Skills: Azure Policy, locks, tagging strategy, management groups  
-- Status: inprogress 
-- Folder: `/06-governance-security-solutions/policy-governance`
-
----
-
-### **7. Automation**
-**PowerShell Automated VM Deployment**  
-- Solves: Consistent, repeatable infrastructure deployment  
-- Skills: PowerShell, CLI, ARM/Bicep fundamentals  
-- Status: inprogress 
-- Folder: `/07-automation-powershell/vm-deployment`
-
----
-
-## 🏗️ How Each Project Is Structured
-
-Every project includes:
-
-- **Business Problem**  
-- **Azure Services Used**  
-- **Architecture Diagram**  
-- **Deployment Steps**  
-- **PowerShell/CLI Scripts**  
-- **Security Considerations**  
-- **Cost Optimisation Notes**  
-- **What This Demonstrates (AZ‑104 Mapping)**  
-
-This ensures each solution is **practical, professional, and interview‑ready**.
-
----
-
-## 🎯 Why This Portfolio Exists
-
-Azure certifications prove knowledge.  
-**This portfolio proves capability.**
-
-The goal is to show:
-
-- I can design cloud solutions  
-- I can deploy them securely  
-- I can automate them  
-- I understand enterprise requirements  
-- I can document like a real engineer  
-
-This is the level of work expected from a **Modern Workplace / Azure Administrator / Cloud Engineer**.
-
----
-
-## 📫 Connect With Me
-
-**LinkedIn:** https://linkedin.com/in/abdulbasit-soliu-75901b250 
-**GitHub:** https://github.com/DynamicGame  
-
----
-
-## 🚀 Next Steps
-
-More projects will be added, including:
-
-- Azure App Service deployments  
-- Azure SQL + Private Endpoints  
-- Azure Backup & Recovery Vault  
-- Azure Container Apps  
-- Azure Load Balancer + Scale Sets  
-
-Stay tuned — this portfolio will continue to grow as I build more enterprise‑focused cloud solutions.
+See [contribution and evidence guidance](CONTRIBUTING.md) for the standard used when adding a project or marking a milestone complete.

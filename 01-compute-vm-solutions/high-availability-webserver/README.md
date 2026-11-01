@@ -1,118 +1,45 @@
-🌐 Highly Available Web Server on Azure
-Azure Virtual Machines + Availability Set | Enterprise‑Grade Compute Solution
-A production‑ready, highly available web server architecture built using Azure Virtual Machines, Availability Sets, NSGs, and Virtual Networks.
-This project demonstrates how to design and deploy resilient compute infrastructure aligned with AZ‑104 Microsoft Azure Administrator skills.
+# Availability-set web servers
 
-🧩 Business Problem
-A company hosts an internal web application that suffers from:
+**Azure VMs · Windows Server · IIS · Azure CLI / PowerShell**
 
-Single‑point‑of‑failure on a physical server
+## Purpose and status
 
-Downtime during OS updates
+Explore the infrastructure needed to move a web workload away from one server. The lab defines two Windows VMs in an availability set, an NSG and an IIS installation step.
 
-Hardware‑related outages
+Deployment screenshots from an earlier run are available in [screenshots](screenshots/). Scripts were corrected during the repository review and need a fresh Azure deployment test. A shared application endpoint, health-based traffic distribution and measured failover are still future work.
 
-Limited scalability
+## Architecture
 
-The business needs a redundant, cloud‑based, highly available solution that ensures the application stays online even during failures or maintenance.
+See the [editable architecture and design notes](architecture/README.md). Availability sets spread VMs across fault/update domains; they do not route requests or replicate application state. The current lab exposes each VM separately for HTTP testing.
 
-Azure Availability Sets solve this by distributing VMs across fault domains and update domains, ensuring at least one VM remains operational.
+## Scripts
 
+| Order | Script | Purpose |
+| --- | --- | --- |
+| 1 | [deploy.ps1](scripts/deploy.ps1) | Resource group, VNet, subnet NSG, availability set and two Windows VMs |
+| 2 | [install-iis.ps1](scripts/install-iis.ps1) | Install IIS on both VMs |
+| Optional | [nsg-rules.ps1](scripts/nsg-rules.ps1) | Reapply HTTP rules and optionally allow RDP from one administrator IPv4 address |
+| Teardown | [cleanup.ps1](scripts/cleanup.ps1) | Delete the dedicated lab resource group after confirmation |
 
-| Service | Purpose |
-| --- | --- |
-| **Virtual Machines** | Hosts the web workload |
-| **Availability Set** | Ensures redundancy across racks & update cycles |
-| **Virtual Network** | Private network boundary |
-| **Subnet** | Logical segmentation for compute tier |
-| **NSG** | Filters inbound/outbound traffic |
-| **Public IP** | Optional external access |
-| **Managed Disks** | Encrypted OS disks |
-| **Tags** | Cost & ownership governance |
+## Run the lab
 
-🚀 Deployment Scripts
+From this project directory, after `az login` and checking `az account show`:
 
-This project includes three automation scripts located in /scripts.
+```powershell
+./scripts/deploy.ps1
+./scripts/install-iis.ps1
+# Optional administrative access; replace the example with your own public IPv4 /32.
+./scripts/nsg-rules.ps1 -AdminCidr '203.0.113.10/32'
+```
 
-1. deploy.ps1
-   
-Deploys the full environment:
+The deployment requests a Windows administrator password securely at runtime. RDP is not opened by default. HTTP is a lab test endpoint; opening a port does not configure TLS or an HTTPS certificate.
 
-Resource Group
+## Validation
 
-VNet + Subnet
+Check both VMs are running and belong to `avset-web`. Inspect the effective NSG rules, request each VM's HTTP endpoint and verify that RDP is blocked unless the optional administrator rule is applied. Capture redacted evidence and the CLI version. A future load-balancer milestone should test health probes and access during one VM's outage.
 
-NSG
+## Cleanup and next steps
 
-Availability Set
+Run `./scripts/cleanup.ps1` only for this lab's resource group. Deletion is asynchronous; confirm it finishes. Add a load balancer, a repeatable application deployment, TLS, monitoring and a recorded failure test before describing the application as highly available.
 
-Two VMs
-
-Tags
-
-2. nsg-rules.ps1
-Applies secure NSG rules:
-
-Allow HTTP (80)
-
-Allow HTTPS (443)
-
-Restrict RDP/SSH to admin IP
-
-Optional deny‑all fallback
-
-3. install-iis.ps1 
-
-After deploying the infrastructure, install IIS using Azure VM Extensions
-
-4. cleanup.ps1
-
-Safely deletes the entire environment with a confirmation prompt.
-
-🔐 Security Considerations
-
-Restrict RDP/SSH to your IP only
-
-Use Azure Bastion for secure remote access
-
-Enable Azure Disk Encryption
-
-Apply NSGs at subnet level for layered security
-
-Use resource locks to prevent accidental deletion
-
-Apply tags for cost tracking and governance
-
-💰 Cost Optimisation
-
-Use B‑series VMs for dev/test
-
-Use D‑series for production workloads
-
-Enable auto‑shutdown for non‑production environments
-
-Use Standard HDD for OS disks unless performance is required
-
-Availability Sets have no cost — only VMs incur charges
-
-🧠 What This Demonstrates (AZ‑104 Skills)
-
-This project validates your ability to:
-
-Deploy and manage Azure Virtual Machines
-
-Design highly available compute solutions
-
-Configure VNets, subnets, NICs, and IP addressing
-
-Implement NSGs and network security
-
-Apply governance (tags, locks)
-
-Automate deployments with PowerShell & CLI
-
-Understand fault domains and update domains
-
-Build resilient, production‑ready infrastructure
-
-
+[Back to portfolio](../../README.md)

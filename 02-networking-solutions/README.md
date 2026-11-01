@@ -1,210 +1,52 @@
-📘 Three‑Tier Enterprise Network on Azure (Project 2)
-Azure CLI • Azure Firewall • Private Endpoints • Private DNS • Bastion • Load Balancers • ASGs • NSGs • Route Tables
-This project demonstrates a full enterprise‑grade Azure network architecture, deployed entirely using Azure CLI.
-It follows zero‑trust principles, uses private connectivity, and mirrors the design patterns used in real production landing zones.
+# Three-tier Azure network
 
-This is the flagship project of my Azure portfolio.
+**VNets · NSGs / ASGs · Load balancers · Firewall · Bastion · Private endpoints**
 
-🧱 Architecture Overview
-This solution implements a secure three‑tier application architecture:
+## Purpose and status
 
-```bash 
-Internet
-   │
-Public Load Balancer
-   │
-Web Tier (IIS)
-   │
-Internal Load Balancer
-   │
-App Tier (IIS/API)
-   │
-Azure SQL (Private Endpoint)
-```
-All traffic is inspected by Azure Firewall, and all management access is handled through Azure Bastion — no public IPs on any VM.
+Design network boundaries for a web, application and database workload. Component scripts cover the infrastructure, but end-to-end application connectivity and security enforcement have not been demonstrated by repository evidence. Integration work is in progress.
 
-🌐 Network Topology
-Virtual Network: 10.0.0.0/16
+## Architecture
 
-| Subnet | CIDR | Purpose |
+The [architecture notes](three-tier-architecture/architecture/README.md) distinguish the intended application flow from the resources currently scripted. The design uses `10.0.0.0/16`:
+
+| Subnet | CIDR | Use |
 | --- | --- | --- |
-| ``web-subnet`` | 10.0.1.0/24 | Public LB + Web VMs |
-| ``app-subnet`` | 10.0.2.0/24 | Internal LB + App VMs |
-| ``db-subnet`` | 10.0.3.0/24 | SQL Private Endpoint |
-| ``AzureBastionSubnet`` | 10.0.10.0/27 | Azure Bastion |
-| ``AzureFirewallSubnet`` | 10.0.20.0/26 | Azure Firewall |
-| ``private-endpoints`` | 10.0.30.0/24 | Storage + Key Vault Private Endpoints |
+| web-subnet | 10.0.1.0/24 | Web VM NICs |
+| app-subnet | 10.0.2.0/24 | App VM NICs and internal load-balancer frontend |
+| db-subnet | 10.0.3.0/24 | Reserved database-tier subnet; SQL endpoint is elsewhere |
+| AzureBastionSubnet | 10.0.10.0/26 | Bastion |
+| AzureFirewallSubnet | 10.0.20.0/26 | Firewall |
+| private-endpoints | 10.0.30.0/24 | SQL, Blob and Key Vault private endpoints |
 
+## Script order
 
-🔐 Security Architecture
-Network Security Groups (NSGs)
-Web NSG
+Scripts are in [three-tier-architecture/scripts](three-tier-architecture/scripts/). Review configuration before execution:
 
-Allow 80/443 from Internet
+1. `deploy-network.ps1` — VNet, subnets, ASGs, NSGs and empty route tables.
+2. `deploy-firewall.ps1` — Firewall, policy and outbound rules.
+3. `deploy-web.ps1` — public load balancer and web VMs.
+4. `deploy-app.ps1` — internal load balancer and app VMs; IIS is only a placeholder workload.
+5. `deploy-db.ps1` — SQL, private endpoint and DNS.
+6. `deploy-private-endpoints.ps1` — Blob and Key Vault resources, private endpoints and DNS.
+7. `deploy-bastion.ps1` — management access.
+8. `nsg-rules.ps1` — tier access rules.
+9. Review routing before running `route-tables.ps1`; see the routing constraint below.
 
-App NSG
+Windows and SQL passwords are requested at runtime. Check extension availability, service quotas, resource-name availability and the selected subscription before starting. Firewall, Bastion, SQL and VMs incur ongoing charges.
 
-Allow 8080 from asg-web only
+## Integration constraints
 
-DB NSG
+- The public load balancer only configures port 80. Port 443 in an NSG does not provide TLS.
+- The app-tier IIS binding is adjusted to port 8080; it is not a deployed backend API, and the web tier does not yet forward application requests to it.
+- `0.0.0.0/0` UDRs control default-route egress, not every VNet or private-endpoint flow. Sending public-load-balancer return traffic through Firewall can create asymmetric routing. Resolve and test the ingress/egress design before associating the web route table.
+- NSG default `AllowVNetInBound` rules still matter. ASG allow rules alone do not prove tier isolation. The SQL private endpoint lives outside `db-subnet`, so that subnet's NSG and `asg-db` do not enforce SQL endpoint access.
+- The draft Firewall policy permits broad web browsing. It is not an egress allowlist or proof of zero-trust enforcement.
 
-Allow 1433 from asg-app only
+## Validation and cleanup
 
-Application Security Groups (ASGs)
-asg-web
+Record DNS resolution to private addresses, endpoint connection approval, public access being disabled, both load-balancer probes, Bastion access and allowed/denied inter-tier flows. Inspect effective routes and test return traffic before claiming Firewall inspection. Deploy and test an actual web-to-app-to-SQL request before marking integration complete.
 
-asg-app
+Use `three-tier-architecture/scripts/cleanup.ps1` to remove the dedicated group after confirmation. Check deletion has completed. See [repository review](../docs/REVIEW.md) for outstanding items.
 
-asg-db
-
-Azure Firewall (Premium)
-All outbound traffic forced through firewall
-
-Application rules for Windows Update, GitHub, web traffic
-
-Network rules for DNS, SQL, NTP
-
-Route Tables (UDRs)
-Web → Firewall
-
-App → Firewall
-
-DB → Firewall
-
-This enforces zero‑trust segmentation between tiers.
-
-🛰️ Load Balancers
-Public Load Balancer (Web Tier)
-Frontend: Public IP
-
-Backend: Web VMs
-
-Probe: TCP 80
-
-Rule: 80 → backend
-
-Internal Load Balancer (App Tier)
-Frontend: Private IP
-
-Backend: App VMs
-
-Probe: TCP 8080
-
-Rule: 8080 → backend
-
-🛡️ Private Connectivity
-Private Endpoints
-Azure SQL
-
-Storage Account (Blob)
-
-Key Vault
-
-Private DNS Zones
-privatelink.database.windows.net
-
-privatelink.blob.core.windows.net
-
-privatelink.vaultcore.azure.net
-
-Linked to the VNet for automatic name resolution.
-
-🖥️ Compute Layer
-Web Tier
-2× Windows Server 2022 VMs
-
-IIS installed via Custom Script Extension
-
-Behind Public Load Balancer
-
-Assigned to asg-web
-
-App Tier
-2× Windows Server 2022 VMs
-
-IIS installed (placeholder for API/backend)
-
-Behind Internal Load Balancer
-
-Assigned to asg-app
-
-Database Tier
-Azure SQL Database (S0)
-
-Public access disabled
-
-Private Endpoint only
-
-🔒 Secure Access
-Azure Bastion
-Deployed in AzureBastionSubnet
-
-Provides RDP/SSH without public IPs
-
-All management traffic stays inside Azure backbone
-
-📁 Repository Structure
-```bash
-/three-tier-architecture
-    /architecture
-        diagram.png
-    /scripts
-        deploy-network.ps1
-        deploy-firewall.ps1
-        route-tables.ps1
-        deploy-web.ps1
-        deploy-app.ps1
-        deploy-db.ps1
-        deploy-private-endpoints.ps1
-        deploy-bastion.ps1
-        nsg-rules.ps1
-        cleanup.ps1
-    /screenshots
-    README.md
-```
-
-🚀 Deployment Order
-
-deploy-network.ps1
-
-deploy-firewall.ps1
-
-route-tables.ps1
-
-deploy-web.ps1
-
-deploy-app.ps1
-
-deploy-db.ps1
-
-deploy-private-endpoints.ps1
-
-deploy-bastion.ps1
-
-nsg-rules.ps1
-
-cleanup.ps1 (optional teardown)
-
-🎯 Key Learning Outcomes
-By completing this project, I demonstrated:
-
-Designing secure Azure landing zone–style networks
-
-Implementing zero‑trust segmentation
-
-Using Azure Firewall with UDRs
-
-Deploying multi‑tier architectures with load balancers
-
-Enforcing private connectivity with Private Endpoints
-
-Managing DNS with Private DNS Zones
-
-Automating infrastructure with Azure CLI
-
-Securing VM access with Azure Bastion
-
-Applying NSGs and ASGs correctly
-
-Building enterprise‑grade cloud environments
-
+[Back to portfolio](../README.md)

@@ -1,129 +1,22 @@
-<#
-    Project: Highly Available Web Server (Azure VMs + Availability Set)
-    Author: DynamicGame (Abdulbasit)
-    Purpose: Deploy a HA VM environment aligned with AZ-104 skills
-#>
-
-# -----------------------------
-# Variables
-# -----------------------------
-$location        = "eastus"
-$rgName          = "rg-ha-web"
-$vnetName        = "vnet-ha-web"
-$subnetName      = "snet-web"
-$addressPrefix   = "10.0.0.0/16"
-$subnetPrefix    = "10.0.1.0/24"
-$nsgName         = "nsg-web"
-$avSetName       = "avset-web"
-$vm1Name         = "webvm01"
-$vm2Name         = "webvm02"
-$adminUser       = "azureuser"
-$tags            = @{ Environment="Dev"; Owner="Abdulbasit"; Project="HA-Web" }
-
-# -----------------------------
-# 1. Create Resource Group
-# -----------------------------
-Write-Host "Creating Resource Group..." -ForegroundColor Cyan
-az group create `
-    --name $rgName `
-    --location $location
-
-# -----------------------------
-# 2. Create Virtual Network + Subnet
-# -----------------------------
-Write-Host "Creating VNet and Subnet..." -ForegroundColor Cyan
-az network vnet create `
-    --resource-group $rgName `
-    --name $vnetName `
-    --address-prefix $addressPrefix `
-    --subnet-name $subnetName `
-    --subnet-prefix $subnetPrefix
-
-# -----------------------------
-# 3. Create Network Security Group
-# -----------------------------
-Write-Host "Creating NSG..." -ForegroundColor Cyan
-az network nsg create `
-    --resource-group $rgName `
-    --name $nsgName
-
-# Allow HTTP
-az network nsg rule create `
-    --resource-group $rgName `
-    --nsg-name $nsgName `
-    --name Allow-HTTP `
-    --priority 100 `
-    --protocol Tcp `
-    --destination-port-ranges 80 `
-    --access Allow
-
-# Allow HTTPS
-az network nsg rule create `
-    --resource-group $rgName `
-    --nsg-name $nsgName `
-    --name Allow-HTTPS `
-    --priority 110 `
-    --protocol Tcp `
-    --destination-port-ranges 443 `
-    --access Allow
-
-# Allow RDP (restricted)
-az network nsg rule create `
-    --resource-group $rgName `
-    --nsg-name $nsgName `
-    --name Allow-RDP `
-    --priority 200 `
-    --protocol Tcp `
-    --destination-port-ranges 3389 `
-    --access Allow
-
-# -----------------------------
-# 4. Create Availability Set
-# -----------------------------
-Write-Host "Creating Availability Set..." -ForegroundColor Cyan
-az vm availability-set create `
-    --resource-group $rgName `
-    --name $avSetName `
-    --platform-fault-domain-count 2 `
-    --platform-update-domain-count 5
-
-# -----------------------------
-# 5. Deploy VM1
-# -----------------------------
-Write-Host "Deploying VM1..." -ForegroundColor Cyan
-az vm create `
-    --resource-group $rgName `
-    --name $vm1Name `
-    --availability-set $avSetName `
-    --image Win2022Datacenter `
-    --size Standard_B2s `
-    --vnet-name $vnetName `
-    --subnet $subnetName `
-    --nsg $nsgName `
-    --admin-username $adminUser `
-    --generate-ssh-keys `
-    --tags $tags
-
-# -----------------------------
-# 6. Deploy VM2
-# -----------------------------
-Write-Host "Deploying VM2..." -ForegroundColor Cyan
-az vm create `
-    --resource-group $rgName `
-    --name $vm2Name `
-    --availability-set $avSetName `
-    --image Win2022Datacenter `
-    --size Standard_B2s `
-    --vnet-name $vnetName `
-    --subnet $subnetName `
-    --nsg $nsgName `
-    --admin-username $adminUser `
-    --generate-ssh-keys `
-    --tags $tags
-
-# -----------------------------
-# 7. Output Public IP
-# -----------------------------
-Write-Host "`nDeployment complete!" -ForegroundColor Green
-Write-Host "Public IP for VM1:" -ForegroundColor Yellow
-az vm list-ip-addresses -g $rgName -n $vm1Name --query "[].virtualMachine.network.publicIpAddresses[].ipAddress" -o tsv
+#requires -Version 7.3
+[CmdletBinding()]
+param([string]$Location = 'eastus', [string]$ResourceGroupName = 'rg-ha-web')
+. "$PSScriptRoot/../../../tools/Initialize-Lab.ps1"
+$password = Read-LabPassword
+try {
+    $tags = @('Environment=Dev', 'Owner=Abdulbasit', 'Project=HA-Web')
+    az group create --name $ResourceGroupName --location $Location --tags $tags --output none
+    az network nsg create -g $ResourceGroupName -n nsg-web --output none
+    az network nsg rule create -g $ResourceGroupName --nsg-name nsg-web -n Allow-HTTP --priority 100 --direction Inbound --protocol Tcp --source-address-prefixes Internet --destination-port-ranges 80 --access Allow --output none
+    az network vnet create -g $ResourceGroupName -n vnet-ha-web --address-prefixes 10.0.0.0/16 --subnet-name snet-web --subnet-prefixes 10.0.1.0/24 --output none
+    az network vnet subnet update -g $ResourceGroupName --vnet-name vnet-ha-web -n snet-web --network-security-group nsg-web --output none
+    az vm availability-set create -g $ResourceGroupName -n avset-web --platform-fault-domain-count 2 --platform-update-domain-count 5 --output none
+    foreach ($vm in @('webvm01', 'webvm02')) {
+        # An explicitly created NIC prevents implicit NSG/RDP rules in az vm create.
+        az network public-ip create -g $ResourceGroupName -n "$vm-pip" --sku Standard --allocation-method Static --output none
+        az network nic create -g $ResourceGroupName -n "$vm-nic" --vnet-name vnet-ha-web --subnet snet-web --public-ip-address "$vm-pip" --output none
+        az vm create -g $ResourceGroupName -n $vm --availability-set avset-web --image Win2022Datacenter --size Standard_B2s --nics "$vm-nic" --admin-username azureuser --admin-password $password --tags $tags --output none
+        az vm list-ip-addresses -g $ResourceGroupName -n $vm --output table
+    }
+}
+finally { $password = $null }
